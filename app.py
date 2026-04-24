@@ -40,8 +40,7 @@ thead tr{background:var(--surface2)}
 th{padding:11px 12px;text-align:right;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;user-select:none;white-space:nowrap}
 th:first-child{text-align:left}th:hover{color:var(--text)}
 td{padding:10px 12px;text-align:right;font-size:13px;border-top:1px solid var(--border);white-space:nowrap}
-td:first-child{text-align:left}
-tr:hover td{background:rgba(79,142,247,.04)}
+td:first-child{text-align:left}tr:hover td{background:rgba(79,142,247,.04)}
 .ticker{font-weight:700;font-size:14px}
 .badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;margin-left:4px}
 .badge.fire{background:rgba(247,201,79,.15);color:var(--yellow)}.badge.up{background:rgba(38,217,127,.12);color:var(--green)}
@@ -96,13 +95,13 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:11px;border-t
   </div>
   <div class="sort-bar">
     <span style="font-size:11px;color:var(--muted);line-height:24px;margin-right:4px">정렬:</span>
-    <button class="sort-btn active" onclick="sortBy('change','desc',this)">24h 높은순</button>
-    <button class="sort-btn" onclick="sortBy('change','asc',this)">24h 낮은순</button>
-    <button class="sort-btn" onclick="sortBy('price','desc',this)">현재가 높은순</button>
-    <button class="sort-btn" onclick="sortBy('volume','desc',this)">거래량 높은순</button>
-    <button class="sort-btn" onclick="sortBy('m1','desc',this)">1분 높은순</button>
-    <button class="sort-btn" onclick="sortBy('m5','desc',this)">5분 높은순</button>
-    <button class="sort-btn" onclick="sortBy('m60','desc',this)">1시간 높은순</button>
+    <button class="sort-btn active" onclick="sortBy(&apos;change&apos;,&apos;desc&apos;,this)">24h 높은순</button>
+    <button class="sort-btn" onclick="sortBy(&apos;change&apos;,&apos;asc&apos;,this)">24h 낮은순</button>
+    <button class="sort-btn" onclick="sortBy(&apos;price&apos;,&apos;desc&apos;,this)">현재가 높은순</button>
+    <button class="sort-btn" onclick="sortBy(&apos;volume&apos;,&apos;desc&apos;,this)">거래량 높은순</button>
+    <button class="sort-btn" onclick="sortBy(&apos;m1&apos;,&apos;desc&apos;,this)">1분 높은순</button>
+    <button class="sort-btn" onclick="sortBy(&apos;m5&apos;,&apos;desc&apos;,this)">5분 높은순</button>
+    <button class="sort-btn" onclick="sortBy(&apos;m60&apos;,&apos;desc&apos;,this)">1시간 높은순</button>
   </div>
   <div id="progress-wrap" style="margin-bottom:10px;display:none">
     <div style="font-size:11px;color:var(--muted);margin-bottom:3px">단기 추이 로딩 <span id="progress-text">0/0</span></div>
@@ -157,13 +156,10 @@ async function fetchTimeframes(){
       try{
         const r=await fetch('/api/timeframes?ticker='+ticker,{signal:sig});
         const d=await r.json();
-        if(!sig.aborted){
-          tfData[ticker]=d;done++;
-          const pct=Math.round(done/total*100);
+        if(!sig.aborted){tfData[ticker]=d;done++;
           document.getElementById('progress-text').textContent=done+'/'+total;
-          document.getElementById('progress-fill').style.width=pct+'%';
-          updateRow(ticker,d);
-        }
+          document.getElementById('progress-fill').style.width=Math.round(done/total*100)+'%';
+          updateRow(ticker,d);}
       }catch(e){if(!sig.aborted)done++;}
     }));
     if(!sig.aborted)await new Promise(r=>setTimeout(r,100));
@@ -188,8 +184,8 @@ function renderTable(){
   const sorted=[...allData].sort((a,b)=>{
     const map={change:'change_pct',price:'current_price',volume:'volume_24h'};
     const isTf=['m1','m5','m15','m30','m60'].includes(sortKey);
-    const av=isTf?(tfData[a.ticker]?.[sortKey]??-999):a[map[sortKey]??'change_pct'];
-    const bv=isTf?(tfData[b.ticker]?.[sortKey]??-999):b[map[sortKey]??'change_pct'];
+    const av=isTf?(tfData[a.ticker]?.[sortKey]??-999):a[map[sortKey]||'change_pct'];
+    const bv=isTf?(tfData[b.ticker]?.[sortKey]??-999):b[map[sortKey]||'change_pct'];
     return sortDir==='desc'?bv-av:av-bv;
   });
   if(!sorted.length){document.getElementById('content').innerHTML='<div class="empty">조건에 맞는 급등 종목이 없습니다.</div>';return;}
@@ -206,9 +202,22 @@ function renderTable(){
       const txt=v!==undefined?fmtPct(v):'···';
       return '<div class="tf-wrap"><div class="tf-label-sm">'+t.l+'</div><div class="tf-val '+cls+' tf-'+t.k+'">'+txt+'</div></div>';
     }).join('');
-    return '<tr data-ticker="'+d.ticker+'"><td><span class="rank">'+(i+1)+'</span> <span class="ticker">'+d.ticker+'</span>'+badge+'</td><td>'+Math.round(d.opening_price).toLocaleString()+'</td><td>'+price+'</td><td style="font-weight:700;color:'+chgColor+'">+'+d.change_pct.toFixed(2)+'%</td><td class="vol">'+vol+'</td><td><div class="tf-group">'+tfHtml+'</div></td></tr>';
+    return '<tr data-ticker="'+d.ticker+'"><td><span class="rank">'+(i+1)+'</span> <span class="ticker">'+d.ticker+'</span>'+badge+'</td>'
+      +'<td>'+Math.round(d.opening_price).toLocaleString()+'</td>'
+      +'<td>'+price+'</td>'
+      +'<td style="font-weight:700;color:'+chgColor+'">+'+d.change_pct.toFixed(2)+'%</td>'
+      +'<td class="vol">'+vol+'</td>'
+      +'<td><div class="tf-group">'+tfHtml+'</div></td></tr>';
   }).join('');
-  document.getElementById('content').innerHTML='<table><thead><tr><th style="text-align:left">종목</th><th>24h 시가</th><th>현재가</th><th onclick="sortBy('change','desc',this)" style="cursor:pointer">24h 등락률 ↕</th><th onclick="sortBy('volume','desc',this)" style="cursor:pointer">거래량(24h) ↕</th><th><div class="tf-group">'+TF.map(t=>'<div style="min-width:58px;text-align:center;font-size:10px;color:var(--muted)">'+t.l+'</div>').join('')+'</div></th></tr></thead><tbody>'+rows+'</tbody></table>';
+  const tfHeaders=TF.map(t=>'<div style="min-width:58px;text-align:center;font-size:10px;color:var(--muted)">'+t.l+'</div>').join('');
+  document.getElementById('content').innerHTML='<table>'
+    +'<thead><tr>'
+    +'<th style="text-align:left">종목</th>'
+    +'<th>24h 시가</th><th>현재가</th>'
+    +'<th onclick="sortBy(&apos;change&apos;,&apos;desc&apos;,this)" style="cursor:pointer">24h 등락률 ↕</th>'
+    +'<th onclick="sortBy(&apos;volume&apos;,&apos;desc&apos;,this)" style="cursor:pointer">거래량(24h) ↕</th>'
+    +'<th><div class="tf-group">'+tfHeaders+'</div></th>'
+    +'</tr></thead><tbody>'+rows+'</tbody></table>';
 }
 function sortBy(key,dir,el){
   sortKey=key;sortDir=dir;
@@ -242,9 +251,9 @@ def surges():
         )
         data = res.json()
     except Exception as e:
-        return jsonify({"error": f"빗썸 API 호출 실패: {str(e)}"}), 500
+        return jsonify({"error": f"API error: {str(e)}"}), 500
     if data.get("status") != "0000":
-        return jsonify({"error": "빗썸 API 오류"}), 500
+        return jsonify({"error": "bithumb API error"}), 500
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     rows = []
     total = 0
@@ -261,8 +270,9 @@ def surges():
                 continue
             change_pct = (closing - opening) / opening * 100
             if change_pct >= threshold:
-                rows.append({"ticker": ticker, "opening_price": opening, "current_price": closing,
-                             "high_price": high, "change_pct": round(change_pct, 2),
+                rows.append({"ticker": ticker, "opening_price": opening,
+                             "current_price": closing, "high_price": high,
+                             "change_pct": round(change_pct, 2),
                              "volume_24h": round(volume, 2), "time": now_str})
         except Exception:
             continue
@@ -279,7 +289,7 @@ def surges():
 def timeframes():
     ticker = request.args.get("ticker", "").upper()
     if not ticker:
-        return jsonify({"error": "ticker 필요"}), 400
+        return jsonify({"error": "ticker required"}), 400
 
     def fetch_candle(interval):
         try:
@@ -310,7 +320,10 @@ def timeframes():
         except Exception:
             return None
 
-    c1m, c5m, c30m, c1h = results.get("1m"), results.get("5m"), results.get("30m"), results.get("1h")
+    c1m  = results.get("1m")
+    c5m  = results.get("5m")
+    c30m = results.get("30m")
+    c1h  = results.get("1h")
     return jsonify({
         "ticker": ticker,
         "m1":  pct(c1m,  1),
