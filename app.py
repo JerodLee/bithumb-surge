@@ -20,7 +20,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 header{padding:20px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
 .logo{font-size:18px;font-weight:700;color:var(--accent)}.logo span{color:var(--text);font-weight:400}
 .meta{font-size:12px;color:var(--muted)}#last-update{color:var(--accent)}
-main{max-width:1400px;margin:0 auto;padding:24px 16px}
+main{max-width:1500px;margin:0 auto;padding:24px 16px}
 .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:20px}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
 .kpi-label{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
@@ -35,26 +35,31 @@ main{max-width:1400px;margin:0 auto;padding:24px 16px}
 .sort-btn{padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;transition:all .15s}
 .sort-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:12px;overflow:hidden;border:1px solid var(--border);min-width:960px}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:12px;overflow:hidden;border:1px solid var(--border);min-width:1150px}
 thead tr{background:var(--surface2)}
-th{padding:11px 12px;text-align:right;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;user-select:none;white-space:nowrap}
+th{padding:11px 12px;text-align:right;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;user-select:none;white-space:nowrap}
 th:first-child{text-align:left}th:hover{color:var(--text)}
-td{padding:10px 12px;text-align:right;font-size:13px;border-top:1px solid var(--border);white-space:nowrap}
+td{padding:8px 12px;text-align:right;font-size:13px;border-top:1px solid var(--border);white-space:nowrap;vertical-align:middle}
 td:first-child{text-align:left}tr:hover td{background:rgba(79,142,247,.04)}
 .ticker{font-weight:700;font-size:14px}
 .badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;margin-left:4px}
 .badge.fire{background:rgba(247,201,79,.15);color:var(--yellow)}.badge.up{background:rgba(38,217,127,.12);color:var(--green)}
 .tf-group{display:flex;gap:3px;justify-content:flex-end;flex-wrap:nowrap}
-.tf-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:58px}
-.tf-label-sm{font-size:9px;color:var(--muted)}
-.tf-val{font-size:11px;font-weight:600;padding:2px 5px;border-radius:4px;min-width:58px;text-align:center}
+.tf-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px}
+.tf-label-sm{font-size:9px;color:var(--muted);margin-bottom:1px}
+.tf-val{font-size:11px;font-weight:600;padding:2px 4px;border-radius:4px;min-width:52px;text-align:center}
 .tf-val.pos{background:rgba(38,217,127,.13);color:var(--green)}
 .tf-val.neg{background:rgba(247,79,107,.13);color:var(--red)}
 .tf-val.neu{background:rgba(123,129,148,.13);color:var(--muted)}
 .tf-val.loading{background:rgba(79,142,247,.08);color:var(--muted);font-size:10px}
 .vol{color:var(--muted);font-size:12px}
+.spark-wrap{display:inline-flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.spark-wrap svg{display:block;border-radius:3px}
+.spark-lbl{font-size:9px;color:var(--muted)}
+.spark-skeleton{display:block;background:var(--border);border-radius:3px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:.9}}
 .empty{text-align:center;padding:60px;color:var(--muted);font-size:15px}
-.loading{text-align:center;padding:60px}
+.loading-wrap{text-align:center;padding:60px}
 .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
 #error-msg{background:rgba(247,79,107,.1);border:1px solid rgba(247,79,107,.3);border-radius:10px;padding:12px 16px;color:var(--red);font-size:13px;margin-bottom:16px;display:none}
@@ -104,82 +109,120 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:11px;border-t
     <button class="sort-btn" onclick="sortBy(&apos;m60&apos;,&apos;desc&apos;,this)">1시간 높은순</button>
   </div>
   <div id="progress-wrap" style="margin-bottom:10px;display:none">
-    <div style="font-size:11px;color:var(--muted);margin-bottom:3px">단기 추이 로딩 <span id="progress-text">0/0</span></div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:3px">추이 + 차트 로딩 <span id="progress-text">0/0</span></div>
     <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
-  <div class="table-wrap"><div id="content"><div class="loading"><div class="spinner"></div>데이터 불러오는 중...</div></div></div>
+  <div class="table-wrap"><div id="content"><div class="loading-wrap"><div class="spinner"></div>데이터 불러오는 중...</div></div></div>
 </main>
-<footer>빗썸 Public API · 24h 등락률 + 단기 추이 (1분/5분/15분/30분/1시간 캔들 기준) · 투자 권유 아님</footer>
+<footer>빗썸 Public API &middot; 24h 등락률 + 12시간 스파크라인(30분봉 24개) + 단기 추이(1분~1시간) &middot; 투자 권유 아님</footer>
 <script>
-let allData=[],tfData={},sortKey='change',sortDir='desc',autoTimer=null,tfAbort=null;
+let allData=[],tfData={},sparkData={},sortKey='change',sortDir='desc',autoTimer=null,abortCtrl=null;
 const TF=[{k:'m1',l:'1분'},{k:'m5',l:'5분'},{k:'m15',l:'15분'},{k:'m30',l:'30분'},{k:'m60',l:'1시간'}];
+const SW=96,SH=40,SP=4;
+
 function fmtPct(v){if(v==null)return'···';return(v>=0?'+':'')+v.toFixed(2)+'%'}
 function tfCls(v){if(v==null)return'loading';if(v>0.05)return'pos';if(v<-0.05)return'neg';return'neu'}
+
+function buildSpark(prices){
+  if(!prices||prices.length<2) return '<rect width="'+SW+'" height="'+SH+'" rx="3" fill="rgba(37,42,53,.6)"/><line x1="'+SP+'" y1="'+(SH/2)+'" x2="'+(SW-SP)+'" y2="'+(SH/2)+'" stroke="#252a35" stroke-width="1"/>';
+  const mn=Math.min(...prices), mx=Math.max(...prices), rng=mx-mn||prices[0]*0.001||1;
+  const xs=prices.map((_,i)=>SP+i*(SW-SP*2)/(prices.length-1));
+  const ys=prices.map(p=>SP+(1-(p-mn)/rng)*(SH-SP*2));
+  const pts=xs.map((x,i)=>x.toFixed(1)+','+ys[i].toFixed(1)).join(' ');
+  const last=prices[prices.length-1], isUp=last>=prices[0];
+  const col=isUp?'#26d97f':'#f74f6b';
+  const fillCol=isUp?'rgba(38,217,127,0.10)':'rgba(247,79,107,0.10)';
+  const lx=xs[xs.length-1].toFixed(1), ly=ys[ys.length-1].toFixed(1);
+  const area='M '+xs[0].toFixed(1)+','+ys[0].toFixed(1)+' L '+pts.split(' ').join(' L ')+' L '+lx+','+SH+' L '+SP+','+SH+' Z';
+  return '<rect width="'+SW+'" height="'+SH+'" rx="3" fill="rgba(22,26,35,.8)"/>'
+    +'<path d="'+area+'" fill="'+fillCol+'"/>'
+    +'<polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>'
+    +'<circle cx="'+lx+'" cy="'+ly+'" r="2.2" fill="'+col+'" stroke="var(--bg)" stroke-width="1"/>';
+}
+
+function makeSpark(prices){
+  return '<svg width="'+SW+'" height="'+SH+'" viewBox="0 0 '+SW+' '+SH+'" xmlns="http://www.w3.org/2000/svg">'+buildSpark(prices)+'</svg>';
+}
+
 async function fetchData(){
   const btn=document.getElementById('refresh-btn');
-  btn.disabled=true;btn.textContent='조회 중...';
+  btn.disabled=true; btn.textContent='조회 중...';
   document.getElementById('error-msg').style.display='none';
-  if(tfAbort)tfAbort.abort();
+  if(abortCtrl) abortCtrl.abort();
   try{
     const thr=parseFloat(document.getElementById('threshold').value)||10;
     const res=await fetch('/api/surges?threshold='+thr);
     const json=await res.json();
-    if(json.error)throw new Error(json.error);
-    allData=json.data;tfData={};
+    if(json.error) throw new Error(json.error);
+    allData=json.data; tfData={}; sparkData={};
     document.getElementById('last-update').textContent=json.updated_at;
     document.getElementById('k-total').textContent=json.total_count.toLocaleString();
     document.getElementById('k-surge').textContent=json.surge_count.toLocaleString();
     document.getElementById('k-top').textContent=json.top_change!=null?'+'+json.top_change.toFixed(2)+'%':'-';
     document.getElementById('k-avg').textContent=json.avg_change!=null?'+'+json.avg_change.toFixed(2)+'%':'-';
-    renderTable();fetchTimeframes();
+    renderTable();
+    fetchExtras();
   }catch(e){
     document.getElementById('error-msg').style.display='block';
     document.getElementById('error-msg').textContent='오류: '+e.message;
     document.getElementById('content').innerHTML='<div class="empty">데이터를 불러오지 못했습니다.</div>';
-  }finally{btn.disabled=false;btn.textContent='새로고침'}
+  }finally{btn.disabled=false; btn.textContent='새로고침'}
 }
-async function fetchTimeframes(){
-  if(!allData.length)return;
-  tfAbort=new AbortController();
-  const sig=tfAbort.signal;
+
+async function fetchExtras(){
+  if(!allData.length) return;
+  abortCtrl=new AbortController();
+  const sig=abortCtrl.signal;
   const tickers=allData.map(d=>d.ticker);
-  let done=0,total=tickers.length;
+  let done=0; const total=tickers.length;
   document.getElementById('progress-wrap').style.display='block';
-  document.getElementById('tf-status').textContent='단기 추이 로딩 중...';
+  document.getElementById('tf-status').textContent='차트 + 추이 로딩 중...';
   document.getElementById('progress-text').textContent='0/'+total;
   document.getElementById('progress-fill').style.width='0%';
-  const BATCH=5;
+  const BATCH=4;
   for(let i=0;i<tickers.length;i+=BATCH){
-    if(sig.aborted)break;
+    if(sig.aborted) break;
     await Promise.all(tickers.slice(i,i+BATCH).map(async ticker=>{
-      if(sig.aborted)return;
+      if(sig.aborted) return;
       try{
-        const r=await fetch('/api/timeframes?ticker='+ticker,{signal:sig});
-        const d=await r.json();
-        if(!sig.aborted){tfData[ticker]=d;done++;
+        const [tf,sp]=await Promise.all([
+          fetch('/api/timeframes?ticker='+ticker,{signal:sig}).then(r=>r.json()),
+          fetch('/api/chart?ticker='+ticker,{signal:sig}).then(r=>r.json())
+        ]);
+        if(!sig.aborted){
+          tfData[ticker]=tf; sparkData[ticker]=sp;
+          done++;
           document.getElementById('progress-text').textContent=done+'/'+total;
           document.getElementById('progress-fill').style.width=Math.round(done/total*100)+'%';
-          updateRow(ticker,d);}
-      }catch(e){if(!sig.aborted)done++;}
+          updateRow(ticker,tf,sp);
+        }
+      }catch(e){ if(!sig.aborted) done++; }
     }));
-    if(!sig.aborted)await new Promise(r=>setTimeout(r,100));
+    if(!sig.aborted) await new Promise(r=>setTimeout(r,120));
   }
   if(!sig.aborted){
-    document.getElementById('tf-status').textContent='단기 추이 업데이트 완료 ✓';
+    document.getElementById('tf-status').textContent='업데이트 완료 ✓';
     document.getElementById('progress-wrap').style.display='none';
   }
 }
-function updateRow(ticker,data){
+
+function updateRow(ticker,tf,sp){
   const row=document.querySelector('tr[data-ticker="'+ticker+'"]');
-  if(!row)return;
-  TF.forEach(tf=>{
-    const el=row.querySelector('.tf-'+tf.k);
-    if(!el)return;
-    const v=data[tf.k];
-    el.className='tf-val '+tfCls(v)+' tf-'+tf.k;
+  if(!row) return;
+  TF.forEach(t=>{
+    const el=row.querySelector('.tf-'+t.k);
+    if(!el) return;
+    const v=tf[t.k];
+    el.className='tf-val '+tfCls(v)+' tf-'+t.k;
     el.textContent=fmtPct(v);
   });
+  const sc=row.querySelector('.spark-cell');
+  if(sc){
+    const prices=sp&&sp.prices&&sp.prices.length>1?sp.prices:null;
+    sc.innerHTML='<div class="spark-wrap" title="최근 12시간 (30분봉)">'+makeSpark(prices)+'<span class="spark-lbl">12h</span></div>';
+  }
 }
+
 function renderTable(){
   const sorted=[...allData].sort((a,b)=>{
     const map={change:'change_pct',price:'current_price',volume:'volume_24h'};
@@ -189,40 +232,53 @@ function renderTable(){
     return sortDir==='desc'?bv-av:av-bv;
   });
   if(!sorted.length){document.getElementById('content').innerHTML='<div class="empty">조건에 맞는 급등 종목이 없습니다.</div>';return;}
+
+  const skelSpark='<div class="spark-wrap"><span class="spark-skeleton" style="width:'+SW+'px;height:'+SH+'px"></span><span class="spark-lbl">로딩중</span></div>';
+
   const rows=sorted.map((d,i)=>{
     const huge=d.change_pct>=30;
     const badge=huge?'<span class="badge fire">급등</span>':'<span class="badge up">상승</span>';
     const price=d.current_price>=1?Math.round(d.current_price).toLocaleString():d.current_price.toFixed(4);
     const vol=d.volume_24h>=1e6?(d.volume_24h/1e6).toFixed(1)+'M':d.volume_24h>=1e3?(d.volume_24h/1e3).toFixed(1)+'K':d.volume_24h.toFixed(0);
-    const chgColor=huge?'var(--yellow)':'var(--green)';
+    const col=huge?'var(--yellow)':'var(--green)';
     const tf=tfData[d.ticker]||{};
+    const sp=sparkData[d.ticker];
     const tfHtml=TF.map(t=>{
       const v=tf[t.k];
       const cls=v!==undefined?tfCls(v):'loading';
       const txt=v!==undefined?fmtPct(v):'···';
       return '<div class="tf-wrap"><div class="tf-label-sm">'+t.l+'</div><div class="tf-val '+cls+' tf-'+t.k+'">'+txt+'</div></div>';
     }).join('');
-    return '<tr data-ticker="'+d.ticker+'"><td><span class="rank">'+(i+1)+'</span> <span class="ticker">'+d.ticker+'</span>'+badge+'</td>'
+    const sparkHtml=sp&&sp.prices&&sp.prices.length>1
+      ?'<div class="spark-wrap" title="최근 12시간 (30분봉)">'+makeSpark(sp.prices)+'<span class="spark-lbl">12h</span></div>'
+      :skelSpark;
+    return '<tr data-ticker="'+d.ticker+'">'
+      +'<td><span class="rank">'+(i+1)+'</span> <span class="ticker">'+d.ticker+'</span>'+badge+'</td>'
       +'<td>'+Math.round(d.opening_price).toLocaleString()+'</td>'
       +'<td>'+price+'</td>'
-      +'<td style="font-weight:700;color:'+chgColor+'">+'+d.change_pct.toFixed(2)+'%</td>'
+      +'<td style="font-weight:700;color:'+col+'">+'+d.change_pct.toFixed(2)+'%</td>'
       +'<td class="vol">'+vol+'</td>'
-      +'<td><div class="tf-group">'+tfHtml+'</div></td></tr>';
+      +'<td class="spark-cell">'+sparkHtml+'</td>'
+      +'<td><div class="tf-group">'+tfHtml+'</div></td>'
+      +'</tr>';
   }).join('');
-  const tfHeaders=TF.map(t=>'<div style="min-width:58px;text-align:center;font-size:10px;color:var(--muted)">'+t.l+'</div>').join('');
+
+  const tfHdr=TF.map(t=>'<div style="min-width:52px;text-align:center;font-size:10px;color:var(--muted)">'+t.l+'</div>').join('');
   document.getElementById('content').innerHTML='<table>'
     +'<thead><tr>'
     +'<th style="text-align:left">종목</th>'
     +'<th>24h 시가</th><th>현재가</th>'
     +'<th onclick="sortBy(&apos;change&apos;,&apos;desc&apos;,this)" style="cursor:pointer">24h 등락률 ↕</th>'
     +'<th onclick="sortBy(&apos;volume&apos;,&apos;desc&apos;,this)" style="cursor:pointer">거래량(24h) ↕</th>'
-    +'<th><div class="tf-group">'+tfHeaders+'</div></th>'
+    +'<th style="text-align:center">12시간 추이</th>'
+    +'<th><div class="tf-group">'+tfHdr+'</div></th>'
     +'</tr></thead><tbody>'+rows+'</tbody></table>';
 }
+
 function sortBy(key,dir,el){
-  sortKey=key;sortDir=dir;
+  sortKey=key; sortDir=dir;
   document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
-  if(el)el.classList.add('active');
+  if(el) el.classList.add('active');
   renderTable();
 }
 function toggleAutoRefresh(){
@@ -255,8 +311,7 @@ def surges():
     if data.get("status") != "0000":
         return jsonify({"error": "bithumb API error"}), 500
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    rows = []
-    total = 0
+    rows, total = [], 0
     for ticker, info in data["data"].items():
         if ticker == "date":
             continue
@@ -332,6 +387,26 @@ def timeframes():
         "m30": pct(c30m, 1),
         "m60": pct(c1h,  1),
     })
+
+
+@app.route("/api/chart")
+def chart():
+    """최근 12시간 스파크라인용 — 30분봉 24개 종가 반환"""
+    ticker = request.args.get("ticker", "").upper()
+    if not ticker:
+        return jsonify({"error": "ticker required"}), 400
+    try:
+        url = f"https://api.bithumb.com/public/candlestick/{ticker}_KRW/30m"
+        r = req_lib.get(url, headers={"accept": "application/json"}, timeout=8)
+        d = r.json()
+        if d.get("status") != "0000" or not d.get("data"):
+            return jsonify({"ticker": ticker, "prices": []})
+        candles = d["data"]
+        recent = candles[-24:] if len(candles) >= 24 else candles
+        prices = [float(c[2]) for c in recent]
+        return jsonify({"ticker": ticker, "prices": prices})
+    except Exception as e:
+        return jsonify({"ticker": ticker, "prices": [], "error": str(e)})
 
 
 if __name__ == "__main__":
